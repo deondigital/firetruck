@@ -1,0 +1,33 @@
+{
+  "name": "@deondigital/firetruck",
+  "version": "1.0.0",
+  "description": "CLI tool for Deon Digital products",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/deondigital/firetruck.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "lint": "tslint -p .",
+    "fix": "tslint -p . --fix"
+  },
+  "bin": {
+    "ft": "./dist/main.js"
+  },
+  "author": "Deon Digital",
+  "devDependencies": {
+    "@types/node": "^10.3.0",
+    "ts-node": "^6.0.5",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.9.2",
+    "typescript": "^2.8.4"
+  },
+  "dependencies": {
+    "commander": "^2.15.1",
+    "deon-api-client": "https://github.com/deondigital/deon-api-client/releases/download/v0.1.0/deon-api-client-0.1.0.tgz",
+    "deon-node-api-client": "https://github.com/deondigital/deon-node-api-client/releases/download/v0.1.0/deon-node-api-client-0.1.0.tgz",
+    "readline": "^1.3.0"
+  }
+}
