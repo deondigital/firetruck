@@ -2,7 +2,7 @@
   "name": "@deondigital/firetruck",
   "version": "1.0.0",
   "description": "CLI tool for Deon Digital products",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0",
   "repository": {
     "type": "git",
     "url": "http://github.com/deondigital/firetruck.git"
