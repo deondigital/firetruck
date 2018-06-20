@@ -1,4 +1,4 @@
-import { Value } from 'deon-api-client';
+import { Value } from '@deondigital/api-client';
 
 export const intValueComparer = (a: Value | null, b: Value | null) => {
   if (a == null || a.class !== 'IntValue') {

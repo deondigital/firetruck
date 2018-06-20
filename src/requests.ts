@@ -6,7 +6,7 @@ import {
   ResidualSource,
   Value,
   valueToJson,
-} from 'deon-api-client';
+} from '@deondigital/api-client';
 import util from 'util';
 import { renderValue } from './pretty-print';
 

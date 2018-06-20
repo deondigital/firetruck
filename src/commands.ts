@@ -1,4 +1,4 @@
-import { Value } from 'deon-api-client';
+import { Value } from '@deondigital/api-client';
 import { default as readline } from 'readline';
 import { renderValue } from './pretty-print';
 import { Requests } from './requests';
