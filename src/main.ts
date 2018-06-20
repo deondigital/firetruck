@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { default as program } from 'commander';
-import { DeonNodeRestClient } from 'deon-node-api-client';
+import { DeonNodeRestClient } from '@deondigital/node-api-client';
 import { Commands } from './commands';
 import { Requests } from './requests';
 

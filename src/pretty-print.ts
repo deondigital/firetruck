@@ -9,7 +9,7 @@ import {
   RecordValue,
   ConstructorValue,
   ListValue,
-} from 'deon-api-client';
+} from '@deondigital/api-client';
 
 const renderQualifiedName = (qn: QualifiedName): string => qn.qualifier.concat(qn.name).join('::');
 
