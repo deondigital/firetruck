@@ -7,7 +7,6 @@ import {
   Value,
   valueToJson,
 } from '@deondigital/api-client';
-import util from 'util';
 import { renderValue } from './pretty-print';
 
 type ContractState = {
@@ -21,38 +20,16 @@ export class Requests {
     this.client = client;
   }
 
-  contracts = async (): Promise<Contract[]> => {
-    const response = await this.client.contracts.getAll();
-    if (response.ok && response.data) {
-      return response.data;
-    }
-    throw Error(`Bad response from server.\n${util.inspect(response)}}`);
-  }
+  contracts = (): Promise<Contract[]> => this.client.contracts.getAll();
 
-  contract = async (id: string): Promise<Contract> => {
-    const r = await this.client.contracts.get(id);
-    if (r.ok && r.data) {
-      return r.data;
-    }
-    throw Error(`Could not find contract with id: ${id}`);
-  }
+  contract = (id: string): Promise<Contract> => this.client.contracts.get(id);
 
   contractIds = async (): Promise<string[]> =>
     (await this.contracts()).map(c => c.id)
 
-  report = (id: string | null) => async (reportSrc: string): Promise<Value> => {
-    const response = id == null
-      ? await this.client.contracts.report({ csl: reportSrc })
-      : await this.client.contracts.reportOnContract(id, { csl: reportSrc });
-    if (response.ok && response.data) {
-      return response.data;
-    }
-    if (response.statusCode === 404) {
-      throw Error(`Could not find contract with id: ${id}`);
-    }
-    throw Error(`Could not evaluate report ${reportSrc} on contract with id ${id}. `
-                + `Response was:\n${util.inspect(response)}`);
-  }
+  report = (id: string | null) => (reportSrc: string): Promise<Value> => id == null
+    ? this.client.contracts.report({ csl: reportSrc })
+    : this.client.contracts.reportOnContract(id, { csl: reportSrc })
 
   reportRendered = (id: string | null) => async (reportSrc : string): Promise<string> =>
     renderValue(await this.report(id)(reportSrc))
@@ -66,10 +43,12 @@ export class Requests {
     reportSrc: string,
   ): Promise<{ id: string, value: Value | null }[]> =>
     Promise.all(contractIds.map(async (id) => {
-      const response = await this.client.contracts.reportOnContract(id, { csl: reportSrc });
-      const value = response.ok ? response.data as Value : null;
+      const value = await this.reportMaybe(id, reportSrc);
       return { id, value };
     }))
+
+  reportMaybe = (id: string, reportSrc: string): Promise<Value | null> =>
+    this.client.contracts.reportOnContract(id, { csl: reportSrc }).catch(() => null)
 
   sortByReport = async (
     contractIds: string[],
@@ -81,15 +60,8 @@ export class Requests {
     return idsWithValues;
   }
 
-  residual = async (id : string, simplified : boolean): Promise<ResidualSource> => {
-    const r = await this.client.contracts.src(id, simplified);
-    if (r.ok && r.data) {
-      return r.data;
-    } if (r.statusCode === 404) {
-      throw Error(`Could not find contract with id: ${id}`);
-    }
-    throw Error(`Could not retrieve simplified contract for contract with id: ${id}`);
-  }
+  residual = (id : string, simplified : boolean): Promise<ResidualSource> =>
+    this.client.contracts.src(id, simplified)
 
   getState = async (id : string, eventsCsl : string = 'events'): Promise<ContractState> => {
     const eventsValue = await this.report(id)(eventsCsl) as ListValue;
@@ -103,11 +75,7 @@ export class Requests {
     }
     for (const e of state.events) {
       const record = e as RecordValue;
-      const response = await this.client.contracts.applyEvent(id, { record });
-      if (!response.ok) {
-        throw Error(`Error when applying event:\n${JSON.stringify(e, null, 2)}\n` +
-                    `Response was:\n${util.inspect(response)}`);
-      }
+      await this.client.contracts.applyEvent(id, { record });
     }
   }
 }

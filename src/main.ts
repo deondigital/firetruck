@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { default as program } from 'commander';
-import { DeonNodeRestClient } from '@deondigital/node-api-client';
+import { DeonRestClient } from '@deondigital/api-client';
+import { default as fetch } from 'node-fetch';
 import { Commands } from './commands';
 import { Requests } from './requests';
 
@@ -9,8 +10,8 @@ const url : string =  process.env.FT_SERVICE || 'http://localhost:8080';
 const targetUrl = process.env.FT_SERVICE_TARGET || url;
 
 const commands = new Commands({
-  requests: new Requests(new DeonNodeRestClient(url)),
-  targetRequests: new Requests(new DeonNodeRestClient(targetUrl)),
+  requests: new Requests(DeonRestClient.create(fetch, url)),
+  targetRequests: new Requests(DeonRestClient.create(fetch, targetUrl)),
 });
 
 program
