@@ -14,6 +14,8 @@ const commands = new Commands({
   targetRequests: new Requests(DeonRestClient.create(fetch, targetUrl)),
 });
 
+const list = (val: string): string[] => val.split(',');
+
 program
   .description('🚒 The Deon Digital firetruck\n\n' +
                '  Uses service at FT_SERVICE if set, otherwise http://localhost:8080.\n\n' +
@@ -63,6 +65,18 @@ program
   .alias('rp')
   .description('Evaluate report on contract with [id] (or no contract)')
   .action(commands.reportCmd);
+
+program
+  .command('instantiate <declarationId> <name> <entryPoint>')
+  .option('--args <args>', 'Declaration expression arguments', list, [])
+  .option('--peers <peers>', 'Peers', list, [])
+  .description('Instantiate contract')
+  .action(commands.instantiateCmd);
+
+program
+  .command('declaration <declarationId>')
+  .description('Print declaration')
+  .action(commands.declarationCmd);
 
 program
   .command('repl [id]')

@@ -1,4 +1,4 @@
-import { Value } from '@deondigital/api-client';
+import { Value, qual } from '@deondigital/api-client';
 import { default as readline } from 'readline';
 import { renderValue } from './pretty-print';
 import { Requests } from './requests';
@@ -85,6 +85,40 @@ export class Commands {
       }
       rl.prompt();
     });
+  }
+
+  instantiateCmd = async (
+    declarationId: string,
+    name: string,
+    entryPoint: string,
+    options: {
+      args: string[],
+      peers: string[],
+    },
+  ) => {
+    if (options.args.length > 0) {
+      console.error('Instantiating with expression arguments is not yet supported by 🚒');
+      process.exit(1);
+    }
+    try {
+      const { contractId } =
+        await this.requests.instantiate(declarationId, name, [], qual(entryPoint), options.peers);
+      console.log(`Contract instantiated with id:`);
+      console.log(contractId);
+    } catch (err) {
+      console.error(err.message ? err.message : err);
+      process.exit(1);
+    }
+  }
+
+  declarationCmd = async (declarationId: string) => {
+    try {
+      const { csl } = await this.requests.getDeclaration(declarationId);
+      console.log(csl);
+    } catch (err) {
+      console.error(err.message ? err.message : err);
+      process.exit(1);
+    }
   }
 
   reportReplCmd = (id : string | null) => this.reportRepl(this.requests.reportRendered(id));
