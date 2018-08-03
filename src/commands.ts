@@ -53,8 +53,8 @@ export class Commands {
       console.log('Number of applied events:');
       const numberOfEvents = await this.requests.numberOfEvents(id);
       console.log(numberOfEvents);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err.message ? err.message : err);
       process.exit(1);
     }
   }
@@ -66,8 +66,8 @@ export class Commands {
     this.requests.report(id)(csl)
     .then(renderValue)
     .then(console.log)
-    .catch((e) => {
-      console.error(e);
+    .catch((err) => {
+      console.error(err.message ? err.message : err);
       process.exit(1);
     })
 
@@ -80,8 +80,8 @@ export class Commands {
     rl.on('line', async (line) => {
       try {
         console.log(await evaluate(line));
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.error(err.message ? err.message : err);
       }
       rl.prompt();
     });
@@ -94,7 +94,14 @@ export class Commands {
       const targetState = {
         events: (await this.requests.getState(id1, options.csl)).events.map(eventTransformation),
       };
-      await this.targetRequests.loadState(id2, targetState);
+      try {
+        await this.targetRequests.loadState(id2, targetState);
+      } catch (err) {
+        console.error(`Unable to migrate state from contract ${id1} to contract ${id2}.`);
+        console.error();
+        console.error(err.message ? err.message : err);
+        process.exit(1);
+      }
     }
 
   migrateCmd = this.migrate(v => v);
