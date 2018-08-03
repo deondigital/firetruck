@@ -6,6 +6,8 @@ import {
   ResidualSource,
   Value,
   valueToJson,
+  QualifiedName,
+  Declaration,
 } from '@deondigital/api-client';
 import { renderValue } from './pretty-print';
 
@@ -59,6 +61,24 @@ export class Requests {
     idsWithValues.sort((a, b) => valueComparer(a.value, b.value));
     return idsWithValues;
   }
+
+  instantiate = async (
+    declarationId: string,
+    name: string,
+    declarationExpressionArguments: Value[],
+    entryPoint: QualifiedName,
+    peers: string[],
+  ): Promise<{ contractId: string }> =>
+    this.client.contracts.instantiate({
+      declarationExpressionArguments,
+      declarationId,
+      entryPoint,
+      name,
+      peers,
+    })
+
+  getDeclaration = (declarationId: string): Promise<Declaration> =>
+    this.client.declarations.get(declarationId)
 
   residual = (id : string, simplified : boolean): Promise<ResidualSource> =>
     this.client.contracts.src(id, simplified)
