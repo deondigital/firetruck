@@ -9,6 +9,7 @@ import {
   RecordValue,
   ConstructorValue,
   ListValue,
+  AgentValue,
 } from '@deondigital/api-client';
 
 const renderQualifiedName = (qn: QualifiedName): string => qn.qualifier.concat(qn.name).join('::');
@@ -48,6 +49,9 @@ const renderList = (v: ListValue): string =>
 ${v.elements.map(renderValue).join(',\n  ')}
 ]`;
 
+const renderAgent = (v: AgentValue): string =>
+  renderQualifiedName(v.boundName);
+
 function renderValue(value: Value): string {
   switch (value.class) {
     case 'IntValue':     return renderInt(value);
@@ -58,6 +62,7 @@ function renderValue(value: Value): string {
     case 'RecordValue' : return renderRecord(value);
     case 'ListValue'   : return renderList(value);
     case 'ConstructorValue' : return renderConstructor(value);
+    case 'AgentValue' : return renderAgent(value);
     default: return '';
   }
 }
