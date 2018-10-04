@@ -113,7 +113,7 @@ export class Commands {
     try {
       const { contractId } =
         await this.requests.instantiate(declarationId, name, [], qual(entryPoint), options.peers);
-      console.log(`Contract instantiated with id:`);
+      console.log('Contract instantiated with id:');
       console.log(contractId);
     } catch (err) {
       console.error(err.message ? err.message : err);
@@ -132,7 +132,7 @@ export class Commands {
   }
 
   reportReplCmd = (id : string | null) => this.reportRepl(
-    (reportSrc: string) => this.requests.reportRendered(id)(reportSrc, []));
+    (reportSrc: string) => this.requests.reportRendered(id)(reportSrc, []))
 
   migrate = (eventTransformation: (v : Value) => Value) =>
     async (id1 : string, id2 : string) => {

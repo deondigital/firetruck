@@ -17,7 +17,8 @@ const renderInt = (v: IntValue): string => v.i.toString();
 
 const renderString = (v: StringValue): string => `"${v.s}"`;
 
-const renderFloat = (v: FloatValue): string => v.d.toString() + (Number.isInteger(v.d) ? '.0' : '');
+const renderFloat = (v: FloatValue): string =>
+  `${v.d.toString()}${Number.isInteger(v.d) ? '.0' : ''}`;
 
 const renderDateTime = (v: InstantValue): string => `#${v.instant}#`;
 
@@ -25,15 +26,15 @@ const renderBoolean = (v: BooleanValue): string => v.b ? 'True' : 'False';
 
 const renderRecord = (v: RecordValue): string => {
   const renderedFields: string[] = Object.keys(v.fields).map(key =>
-    v.fields ? key + ' = ' + renderValue(v.fields[key]) : '',
+    v.fields ? `${key} = ${renderValue(v.fields[key])}` : '',
   );
-  return renderQualifiedName(v.recordTag) + ' { ' + renderedFields.join(', ') + ' }';
+  return `${renderQualifiedName(v.recordTag)} { ${renderedFields.join(', ')} }`;
 };
 
 const renderConstructor = (v: ConstructorValue): string => {
   const renderValuePar = (w: Value) => {
     if (w.class === 'ConstructorValue' && w.args && w.args.length > 0) {
-      return '(' + renderValue(w) + ')';
+      return `(${renderValue(w)})`;
     }
     return renderValue(w);
   };
@@ -43,7 +44,9 @@ const renderConstructor = (v: ConstructorValue): string => {
 };
 
 const renderList = (v: ListValue): string =>
-  '[\n  ' + v.elements.map(renderValue).join(',\n  ') + '\n]';
+  `[
+${v.elements.map(renderValue).join(',\n  ')}
+]`;
 
 function renderValue(value: Value): string {
   switch (value.class) {

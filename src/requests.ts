@@ -36,11 +36,12 @@ export class Requests {
       ? this.client.contracts.report({ csl: reportSrc, values: valueArgs })
       : this.client.contracts.reportOnContract(id, { csl: reportSrc, values: valueArgs })
 
-  reportRendered = (id: string | null) => async (reportSrc : string, valueArgs: Value[]): Promise<string> =>
+  reportRendered = (id: string | null) => async (reportSrc : string, valueArgs: Value[]):
+    Promise<string> =>
     renderValue(await this.report(id)(reportSrc, valueArgs))
 
   numberOfEvents = (id: string): Promise<number> =>
-    this.report(id)('\\cid -> List::length (getEvents cid)', [mkContractIdValue(id, qual("self"))])
+    this.report(id)('\\cid -> List::length (getEvents cid)', [mkContractIdValue(id, qual('self'))])
     .then(v => valueToJson(v) as number)
 
   mapReport = (
@@ -89,7 +90,9 @@ export class Requests {
 
   getState = async (id : string): Promise<ContractState> => {
     const eventsCsl = '\\cid -> getEvents cid';
-    const eventsValue = await this.report(id)(eventsCsl, [mkContractIdValue(id, qual("self"))]) as ListValue;
+    const eventsValue = await this.report(id)(
+      eventsCsl,
+      [mkContractIdValue(id, qual('self'))]) as ListValue;
     const events = eventsValue.elements;
     return { events };
   }
