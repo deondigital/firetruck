@@ -87,9 +87,6 @@ program
   .command('migrate <id1> <id2>')
   .description('Migrate events from contract with id1 to contract with id2. ' +
                'Uses FT_SERVICE_TARGET if set, otherwise same URL as first source contract.')
-  .option(
-    '--csl [eventsCsl]',
-    'The CSL used to retrieve the events from the source', 'events')
   .action(commands.migrateCmd);
 
 // error on unknown commands

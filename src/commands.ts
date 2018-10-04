@@ -1,4 +1,4 @@
-import { Value, qual } from '@deondigital/api-client';
+import { Value, qual, mkContractIdValue } from '@deondigital/api-client';
 import { default as readline } from 'readline';
 import { renderValue } from './pretty-print';
 import { Requests } from './requests';
@@ -20,14 +20,21 @@ export class Commands {
     }
   }
 
+  addSelfIdAsValueArg = (contractIds: string[]) : [string, Value[]][] =>
+    contractIds.map((id: string): [string, Value[]] =>
+      [id
+      , [mkContractIdValue(id, qual('self'))],
+      ])
+
   countContractsCmd = () =>
     this.requests.contracts().then((xs) => { console.log(xs.length); })
 
   listContractsByEventCountCmd = async (): Promise<void> => {
     const contractIds = await this.requests.contractIds();
+    const contractIdsAndValueArgs = this.addSelfIdAsValueArg(contractIds);
     const sorted = await this.requests.sortByReport(
-      contractIds,
-      'List::length events',
+      contractIdsAndValueArgs,
+      '\\cid -> List::length (getEvents cid)',
       intValueComparer,
     );
     for (const { id, value } of sorted) {
@@ -37,9 +44,12 @@ export class Commands {
 
   listContractsByLastTimestampCmd = async (): Promise<void> => {
     const contractIds = await this.requests.contractIds();
+    const contractIdsAndValuesArgs = this.addSelfIdAsValueArg(contractIds);
     const reportSrc =
-      'let val lastEvent = (\\Some x -> x) (List::last (const True) events) in lastEvent.timestamp';
-    const sorted = await this.requests.sortByReport(contractIds, reportSrc, instantValueComparer);
+      'let val lastEvent = \\cid -> (\\Some x -> x) (List::last (const True) (getEvents cid)) \
+      in \\cid -> (lastEvent cid).timestamp';
+    const sorted = await this.requests.sortByReport(
+      contractIdsAndValuesArgs, reportSrc, instantValueComparer);
     for (const { id, value } of sorted) {
       console.log(`${id}       last timestamp: ${value == null ? 'N/A' : renderValue(value)}`);
     }
@@ -63,7 +73,7 @@ export class Commands {
     console.log((await this.requests.residual(id, options.simplify)).csl)
 
   reportCmd = (csl: string, id : string | null): Promise<void> =>
-    this.requests.report(id)(csl)
+    this.requests.report(id)(csl, [])
     .then(renderValue)
     .then(console.log)
     .catch((err) => {
@@ -121,12 +131,13 @@ export class Commands {
     }
   }
 
-  reportReplCmd = (id : string | null) => this.reportRepl(this.requests.reportRendered(id));
+  reportReplCmd = (id : string | null) => this.reportRepl(
+    (reportSrc: string) => this.requests.reportRendered(id)(reportSrc, []));
 
   migrate = (eventTransformation: (v : Value) => Value) =>
-    async (id1 : string, id2 : string, options: { csl: string }) => {
+    async (id1 : string, id2 : string) => {
       const targetState = {
-        events: (await this.requests.getState(id1, options.csl)).events.map(eventTransformation),
+        events: (await this.requests.getState(id1)).events.map(eventTransformation),
       };
       try {
         await this.targetRequests.loadState(id2, targetState);
