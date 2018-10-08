@@ -8,6 +8,8 @@ import {
   valueToJson,
   QualifiedName,
   Declaration,
+  mkContractIdValue,
+  qual,
 } from '@deondigital/api-client';
 import { renderValue } from './pretty-print';
 
@@ -29,35 +31,38 @@ export class Requests {
   contractIds = async (): Promise<string[]> =>
     (await this.contracts()).map(c => c.id)
 
-  report = (id: string | null) => (reportSrc: string): Promise<Value> => id == null
-    ? this.client.contracts.report({ csl: reportSrc })
-    : this.client.contracts.reportOnContract(id, { csl: reportSrc })
+  report = (id: string | null) => (reportSrc: string, valueArgs: Value[]): Promise<Value> =>
+    id == null
+      ? this.client.contracts.report({ csl: reportSrc, values: valueArgs })
+      : this.client.contracts.reportOnContract(id, { csl: reportSrc, values: valueArgs })
 
-  reportRendered = (id: string | null) => async (reportSrc : string): Promise<string> =>
-    renderValue(await this.report(id)(reportSrc))
+  reportRendered = (id: string | null) => async (reportSrc : string, valueArgs: Value[]):
+    Promise<string> =>
+    renderValue(await this.report(id)(reportSrc, valueArgs))
 
   numberOfEvents = (id: string): Promise<number> =>
-    this.report(id)('List::length events')
+    this.report(id)('\\cid -> List::length (getEvents cid)', [mkContractIdValue(id, qual('self'))])
     .then(v => valueToJson(v) as number)
 
   mapReport = (
-    contractIds: string[],
+    contractIdsAndValueArgs: [string, Value[]][],
     reportSrc: string,
   ): Promise<{ id: string, value: Value | null }[]> =>
-    Promise.all(contractIds.map(async (id) => {
-      const value = await this.reportMaybe(id, reportSrc);
+    Promise.all(contractIdsAndValueArgs.map(async ([id, valueArgs]) => {
+      const value = await this.reportMaybe(id, reportSrc, valueArgs);
       return { id, value };
     }))
 
-  reportMaybe = (id: string, reportSrc: string): Promise<Value | null> =>
-    this.client.contracts.reportOnContract(id, { csl: reportSrc }).catch(() => null)
+  reportMaybe = (id: string, reportSrc: string, valueArgs: Value[]): Promise<Value | null> =>
+    this.client.contracts.reportOnContract(id,
+                                           { csl: reportSrc, values: valueArgs }).catch(() => null)
 
   sortByReport = async (
-    contractIds: string[],
+    contractIdsAndValueArgs: [string, Value[]][],
     reportSrc: string,
     valueComparer: (a: Value | null, b: Value | null) => number,
   ): Promise<{ id: string, value: Value | null}[]> => {
-    const idsWithValues = await this.mapReport(contractIds, reportSrc);
+    const idsWithValues = await this.mapReport(contractIdsAndValueArgs, reportSrc);
     idsWithValues.sort((a, b) => valueComparer(a.value, b.value));
     return idsWithValues;
   }
@@ -83,8 +88,11 @@ export class Requests {
   residual = (id : string, simplified : boolean): Promise<ResidualSource> =>
     this.client.contracts.src(id, simplified)
 
-  getState = async (id : string, eventsCsl : string = 'events'): Promise<ContractState> => {
-    const eventsValue = await this.report(id)(eventsCsl) as ListValue;
+  getState = async (id : string): Promise<ContractState> => {
+    const eventsCsl = '\\cid -> getEvents cid';
+    const eventsValue = await this.report(id)(
+      eventsCsl,
+      [mkContractIdValue(id, qual('self'))]) as ListValue;
     const events = eventsValue.elements;
     return { events };
   }

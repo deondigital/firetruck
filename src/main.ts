@@ -17,10 +17,13 @@ const commands = new Commands({
 const list = (val: string): string[] => val.split(',');
 
 program
-  .description('🚒 The Deon Digital firetruck\n\n' +
-               '  Uses service at FT_SERVICE if set, otherwise http://localhost:8080.\n\n' +
-               `  FT_SERVICE=${process.env.FT_SERVICE || 'not set'}\n` +
-               `  FT_SERVICE_TARGET=${process.env.FT_SERVICE_TARGET || 'not set'}\n`)
+  .description(`🚒 The Deon Digital firetruck
+
+  Uses service at FT_SERVICE if set, otherwise http://localhost:8080.
+
+  FT_SERVICE=${process.env.FT_SERVICE || 'not set'}
+  FT_SERVICE_TARGET=${process.env.FT_SERVICE_TARGET || 'not set'}
+`)
   .name('ft')
   .version(require('../package.json').version);
 
@@ -87,9 +90,6 @@ program
   .command('migrate <id1> <id2>')
   .description('Migrate events from contract with id1 to contract with id2. ' +
                'Uses FT_SERVICE_TARGET if set, otherwise same URL as first source contract.')
-  .option(
-    '--csl [eventsCsl]',
-    'The CSL used to retrieve the events from the source', 'events')
   .action(commands.migrateCmd);
 
 // error on unknown commands
