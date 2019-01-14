@@ -84,7 +84,7 @@ program
 program
   .command('repl [id]')
   .description('Report REPL (optionally) on a contract instance by [id]')
-    .action(commands.reportReplCmd);
+  .action(commands.reportReplCmd);
 
 program
   .command('events <id>')
