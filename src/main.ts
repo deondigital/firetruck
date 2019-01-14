@@ -87,6 +87,12 @@ program
   .action(commands.reportReplCmd);
 
 program
+  .command('events <id>')
+  .alias('e')
+  .description('Get events of contract with <id>')
+  .action(commands.getEventsCmd);
+
+program
   .command('migrate <id1> <id2>')
   .description('Migrate events from contract with id1 to contract with id2. ' +
                'Uses FT_SERVICE_TARGET if set, otherwise same URL as first source contract.')
