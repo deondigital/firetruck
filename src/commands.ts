@@ -21,10 +21,10 @@ export class Commands {
   }
 
   addSelfIdAsValueArg = (contractIds: string[]) : [string, Value[]][] =>
-    contractIds.map((id: string): [string, Value[]] =>
-      [id
-      , [mkContractIdValue(id, qual('self'))],
-      ])
+    contractIds.map((id: string): [string, Value[]] => [
+      id,
+      [mkContractIdValue(id, 'self')],
+    ])
 
   countContractsCmd = () =>
     this.requests.contracts().then((xs) => { console.log(xs.length); })

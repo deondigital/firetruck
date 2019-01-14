@@ -9,7 +9,6 @@ import {
   QualifiedName,
   Declaration,
   mkContractIdValue,
-  qual,
 } from '@deondigital/api-client';
 import { renderValue } from './pretty-print';
 
@@ -41,7 +40,7 @@ export class Requests {
     renderValue(await this.report(id)(reportSrc, valueArgs))
 
   numberOfEvents = (id: string): Promise<number> =>
-    this.report(id)('\\cid -> List::length (getEvents cid)', [mkContractIdValue(id, qual('self'))])
+    this.report(id)('\\cid -> List::length (getEvents cid)', [mkContractIdValue(id, 'self')])
     .then(v => valueToJson(v) as number)
 
   mapReport = (
@@ -92,7 +91,7 @@ export class Requests {
     const eventsCsl = '\\cid -> getEvents cid';
     const eventsValue = await this.report(id)(
       eventsCsl,
-      [mkContractIdValue(id, qual('self'))]) as ListValue;
+      [mkContractIdValue(id, 'self')]) as ListValue;
     const events = eventsValue.elements;
     return { events };
   }

@@ -1,6 +1,6 @@
 {
   "name": "@deondigital/firetruck",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "CLI tool for Deon Digital products",
   "license": "AGPL-3.0",
   "repository": {
@@ -19,17 +19,17 @@
   },
   "author": "Deon Digital",
   "devDependencies": {
-    "@types/node": "^10.3.0",
-    "ts-node": "^6.0.5",
-    "tslint": "^5.10.0",
-    "tslint-config-airbnb": "^5.9.2",
-    "typescript": "^2.8.4"
+    "@types/node": "^10.12.18",
+    "ts-node": "^6.2.0",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.2.2"
   },
   "dependencies": {
-    "@deondigital/api-client": "^4.0.0",
-    "@types/node-fetch": "^2.1.2",
-    "commander": "^2.15.1",
-    "node-fetch": "^2.2.0",
+    "@deondigital/api-client": "^7.0.0",
+    "@types/node-fetch": "^2.1.4",
+    "commander": "^2.19.0",
+    "node-fetch": "^2.3.0",
     "readline": "^1.3.0"
   }
 }

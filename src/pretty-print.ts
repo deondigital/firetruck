@@ -50,7 +50,7 @@ ${v.elements.map(renderValue).join(',\n  ')}
 ]`;
 
 const renderPseudoSyntax = (v: PseudoValue<any>): string =>
-  renderQualifiedName(v.boundName);
+  v.boundName;
 
 function renderValue(value: Value): string {
   switch (value.class) {
