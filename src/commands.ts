@@ -38,7 +38,7 @@ export class Commands {
       intValueComparer,
     );
     for (const { id, value } of sorted) {
-      console.log(`${id}       event count: ${value == null ? 'null' : renderValue(value)}`);
+      console.log(`${id}    \tevent count: ${value == null ? 'null' : renderValue(value)}`);
     }
   }
 
@@ -51,7 +51,7 @@ export class Commands {
     const sorted = await this.requests.sortByReport(
       contractIdsAndValuesArgs, reportSrc, instantValueComparer);
     for (const { id, value } of sorted) {
-      console.log(`${id}       last timestamp: ${value == null ? 'N/A' : renderValue(value)}`);
+      console.log(`${id}    \tlast timestamp: ${value == null ? 'N/A' : renderValue(value)}`);
     }
   }
 
@@ -133,6 +133,9 @@ export class Commands {
 
   reportReplCmd = (id : string | null) => this.reportRepl(
     (reportSrc: string) => this.requests.reportRendered(id)(reportSrc, []))
+
+  getEventsCmd = async (id : string) => console.log(
+    await this.requests.reportRendered(id)('getEvents', [mkContractIdValue(id, 'self')]))
 
   migrate = (eventTransformation: (v : Value) => Value) =>
     async (id1 : string, id2 : string) => {
