@@ -17,11 +17,7 @@ type ContractState = {
 };
 
 export class Requests {
-  private client: DeonRestClient;
-
-  constructor(client: DeonRestClient) {
-    this.client = client;
-  }
+  constructor(private client: DeonRestClient) {}
 
   contracts = (): Promise<Contract[]> => this.client.contracts.getAll();
 
